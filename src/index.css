@@ -1,0 +1,16 @@
+@import 'tailwindcss';
+@import './ui/theme.css';
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-good: var(--good);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+  --radius-card: var(--radius);
+  --font-sans: var(--font-sans);
+}

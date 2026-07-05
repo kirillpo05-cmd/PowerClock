@@ -1,0 +1,28 @@
+/* PowerClock design tokens — the only place raw colors are allowed. */
+:root {
+  --bg: #0b0e14;
+  --surface: #131826;
+  --surface-2: #1b2233;
+  --text: #e6eaf2;
+  --muted: #8a94a8;
+  --accent: #60a5fa;
+  --good: #22c55e;
+  --warn: #eab308;
+  --bad: #ef4444;
+  --radius: 16px;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 600;
+}
