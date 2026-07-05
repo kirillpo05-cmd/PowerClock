@@ -26,3 +26,33 @@ h2,
 h3 {
   font-weight: 600;
 }
+
+/* chart hover feedback — instant, per CLAUDE.md animation rules */
+.bar:hover {
+  filter: brightness(1.18);
+}
+
+.skeleton {
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

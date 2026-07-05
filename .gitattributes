@@ -1,0 +1,6 @@
+# data/*.json is machine-written with LF; keep it LF everywhere to avoid
+# CRLF churn between the pipeline (Actions/Linux) and Windows checkouts.
+* text=auto
+*.json text eol=lf
+*.mjs text eol=lf
+*.yml text eol=lf
