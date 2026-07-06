@@ -19,16 +19,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: main # always build the freshest data commit, not the triggering SHA
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true # create the Pages site on first run, no manual setup
       - run: npm ci
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
