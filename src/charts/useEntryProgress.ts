@@ -1,9 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 /**
- * Eased 0→1 progress that runs once on mount (entry animations, SPEC:
- * 400–600 ms ease-out, played only on first render). Honors
- * prefers-reduced-motion by starting at 1.
+ * Eased 0→1 progress for entry animations (SPEC: 400–600 ms ease-out, played
+ * on mount). Honors prefers-reduced-motion by starting at 1.
+ *
+ * Note: no "already started" guard here — React StrictMode (dev) runs the
+ * effect as setup → cleanup → setup, and a guard would leave the animation
+ * cancelled by the cleanup and never restarted, freezing every chart at
+ * progress 0. The empty dep array alone already limits it to mount.
  */
 export function useEntryProgress(duration = 550): number {
   const [progress, setProgress] = useState(() =>
@@ -12,11 +16,9 @@ export function useEntryProgress(duration = 550): number {
       ? 1
       : 0,
   )
-  const started = useRef(false)
 
   useEffect(() => {
-    if (started.current || progress === 1) return
-    started.current = true
+    if (progress === 1) return // reduced motion — nothing to animate
     let raf = 0
     const start = performance.now()
     const tick = (t: number) => {
