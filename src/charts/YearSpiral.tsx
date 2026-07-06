@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
 import { formatCt, type PriceColorScale } from '../lib/scales'
 import type { TooltipHandler } from './tooltip'
+import { useEntryProgress } from './useEntryProgress'
 
 const SIZE = 480
 const CX = SIZE / 2
@@ -41,13 +41,9 @@ type Props = {
 
 /** 12 month arcs on a spiral: January at top-center, radius = time, color = price. */
 export default function YearSpiral({ byMonth, scale, onTooltip }: Props) {
-  // Draw-in via stroke-dashoffset (SPEC §5.4); reduced-motion is handled by
-  // the global CSS override that kills transitions.
-  const [drawn, setDrawn] = useState(false)
-  useEffect(() => {
-    const raf = requestAnimationFrame(() => setDrawn(true))
-    return () => cancelAnimationFrame(raf)
-  }, [])
+  // Draw-in via stroke-dashoffset (SPEC §5.4), driven by the shared RAF
+  // progress with a per-month stagger.
+  const progress = useEntryProgress(700)
 
   return (
     <svg
@@ -60,7 +56,7 @@ export default function YearSpiral({ byMonth, scale, onTooltip }: Props) {
       {byMonth.map(({ month, avg }, m) => (
         <path
           key={month}
-          className="bar anim"
+          className="bar"
           d={monthPath(m)}
           fill="none"
           stroke={avg === null ? 'var(--surface-2)' : scale.color(avg)}
@@ -68,8 +64,7 @@ export default function YearSpiral({ byMonth, scale, onTooltip }: Props) {
           strokeLinecap="round"
           pathLength={1}
           strokeDasharray={1}
-          strokeDashoffset={drawn ? 0 : 1}
-          style={{ transition: `stroke-dashoffset 600ms cubic-bezier(0.22, 1, 0.36, 1) ${m * 45}ms` }}
+          strokeDashoffset={1 - Math.min(1, Math.max(0, progress * 1.55 - (m / 12) * 0.55))}
           onMouseMove={(ev) =>
             onTooltip({
               x: ev.clientX,
