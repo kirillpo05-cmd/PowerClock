@@ -1,49 +1,66 @@
+<div align="center">
+
 # ⚡ PowerClock
 
-**Nord Pool day-ahead electricity prices for the Baltics, drawn the way the data
-actually behaves — in circles.**
+**Nord Pool day-ahead electricity prices for the Baltics, drawn the way the data actually behaves — in circles.**
 
-Hourly electricity prices are cyclical by nature (day, week, year), yet almost
-every tool shows them as flat line charts. PowerClock renders them radially:
-a 24-hour price clock, a weekday×hour heatmap ring, and a one-turn year spiral —
-so "cheap night / expensive weekday evening / pricey winter" is visible at a
-glance, on real, self-updating data.
+[![Live Demo](https://img.shields.io/badge/%E2%96%B6_Live_Demo-kirillpo05--cmd.github.io%2FPowerClock-2ea44f?style=for-the-badge)](https://kirillpo05-cmd.github.io/PowerClock/)
 
-**Live:** https://kirillpo05-cmd.github.io/PowerClock/
+[![Update price data](https://github.com/kirillpo05-cmd/PowerClock/actions/workflows/data.yml/badge.svg)](https://github.com/kirillpo05-cmd/PowerClock/actions/workflows/data.yml)
+[![Deploy to GitHub Pages](https://github.com/kirillpo05-cmd/PowerClock/actions/workflows/deploy.yml/badge.svg)](https://github.com/kirillpo05-cmd/PowerClock/actions/workflows/deploy.yml)
 
-![PowerClock screenshot](docs/screenshot.png)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React_18-20232A?logo=react&logoColor=61DAFB)
+![D3.js](https://img.shields.io/badge/D3.js-F9A03C?logo=d3dotjs&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_v4-06B6D4?logo=tailwindcss&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-41_tests-6E9F18?logo=vitest&logoColor=white)
+![Node 22](https://img.shields.io/badge/Node_22-zero_deps-5FA04E?logo=nodedotjs&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-## What this demonstrates
+<br>
 
-- **Custom D3 visualizations** — three radial charts (radial bars, ring heatmap,
-  spiral) built from raw `d3-shape`/`d3-scale` geometry inside React-owned SVG;
-  no chart library.
-- **A real data pipeline with zero infrastructure** — GitHub Actions cron pulls
-  Nord Pool day-ahead prices from the open [Elering API](https://dashboard.elering.ee/en/nps/price),
-  normalizes 15-minute UTC slots into hourly **Europe/Riga** days, recomputes
-  aggregates and commits versioned JSON snapshots back into the repo. GitHub
-  Pages redeploys automatically.
-- **Timezone-correct data engineering** — "hour of day" is Riga wall time, not
-  UTC; both DST transition days (23-hour and 25-hour) are handled and unit-tested.
-- **Deterministic, idempotent tooling** — re-running the pipeline on unchanged
-  data produces a byte-identical repo (no noisy commits).
-- **Spec-first workflow** — the whole project was built documentation-first:
-  idea → [SPEC.md](SPEC.md) → agent configuration → scaffold → modules.
+<a href="https://kirillpo05-cmd.github.io/PowerClock/">
+  <img src="docs/screenshot.png" alt="PowerClock: 24-hour price clock, weekday×hour ring and year spiral" width="720">
+</a>
 
-## Features
+</div>
 
-- **Price clock** — today's (and tomorrow's, once published ~15:30 EET) 24 hours
-  as radial bars; current hour highlighted with a needle and a live ct/kWh readout.
-- **Weekly ring** — 7 rings × 24 sectors, average prices over the last 60 days:
-  the weekly rhythm in one image.
-- **Year spiral** — monthly averages along a spiral: seasonality without axes.
-- **Insight cards** — cheapest/most expensive hour today, cheapest weekly slot,
-  today vs the 60-day average.
-- **Zone switcher** — LV / EE / LT (all three zones ship in every snapshot).
-- Dark theme, entry animations (with `prefers-reduced-motion` support), exact-value
-  tooltips everywhere, data-freshness badge.
+---
 
-## How it works
+## TL;DR
+
+Hourly electricity prices repeat in cycles: day, week, year. Most tools still show them as flat line charts. PowerClock draws them **radially**: a 24-hour price clock, a weekday×hour heatmap ring and a one-turn year spiral. *Cheap nights, expensive weekday evenings, pricey winters* show up at a glance.
+
+It runs on **real, self-updating data** through a **zero-infrastructure pipeline**. No server, no database, no hosting bill.
+
+**▶ Live:** https://kirillpo05-cmd.github.io/PowerClock/
+
+---
+
+## 🎯 What this project demonstrates
+
+- **🎨 Custom D3 visualizations.** Three radial charts (radial bars, ring heatmap, Archimedean spiral) built from D3 primitives (`arc`, `scaleSequential`) and hand-computed geometry. D3 does the math, React renders the SVG. **No chart library.**
+- **⚙️ A real data pipeline with zero infrastructure.** A daily GitHub Actions cron pulls Nord Pool day-ahead prices from the open [Elering API](https://dashboard.elering.ee/en/nps/price), turns 15-minute UTC slots into hourly **Europe/Riga** days, recomputes aggregates and commits versioned JSON snapshots back to the repo. GitHub Pages redeploys on its own.
+- **🕐 Timezone-correct data engineering.** "Hour of day" means Riga wall time, not UTC. Both DST transition days are covered by unit tests with real dates: the 23-hour spring day (2026-03-29, no hour 03) and the 25-hour autumn day (2025-10-26, doubled hour averaged over 8 slots). Offsets are never hardcoded; everything goes through `Intl.DateTimeFormat`.
+- **📊 Honest charts.** Negative prices are valid input and don't break the scales. Missing hours show up as gaps, never as interpolated values. Empty aggregate cells are `null`, not `0`. Every chart has loading, error, empty and success states, a legend and an exact-value tooltip.
+- **♻️ Deterministic, idempotent tooling.** Re-running the pipeline on unchanged data produces a **byte-identical repo**, so there are no noisy commits. On any API failure it writes nothing and exits non-zero.
+- **📐 Spec-first workflow.** Built documentation-first: idea → [SPEC.md](SPEC.md) → agent configuration → scaffold → modules.
+
+---
+
+## ✨ Features
+
+- **Price clock.** Today's 24 hours as radial bars (tomorrow's too, once published around 15:30 Riga time). The current hour gets a needle and a live ct/kWh readout.
+- **Weekly ring.** 7 rings × 24 sectors of average prices over the last 60 days: the weekly rhythm in one image.
+- **Year spiral.** Monthly averages over all recorded history (since June 2025) along a one-turn spiral: seasonality without axes.
+- **Insight cards.** Cheapest and most expensive hour today, cheapest weekly slot, today vs. the 60-day average.
+- **Zone switcher.** LV / EE / LT; all three zones ship in every snapshot.
+- **Polish.** Dark theme on design tokens, entry animations that respect `prefers-reduced-motion`, tooltips everywhere, and a data-freshness badge (green ≤ 26 h, yellow ≤ 48 h, red after that). Readable down to 360 px wide.
+
+---
+
+## 🏗️ How it works
 
 ```
 GitHub Actions (cron 13:00 UTC, daily)
@@ -52,14 +69,45 @@ GitHub Actions (cron 13:00 UTC, daily)
        → data/daily/YYYY-MM-DD.json   (zones LV/EE/LT)
        → data/aggregates.json         (weekday×hour matrix, monthly avgs)
        → git commit → GitHub Pages redeploy
+
 React + TypeScript + Vite SPA (static, no backend)
-  └─ reads the committed JSON — the browser never calls the API
+  └─ reads the committed JSON; the browser never calls the API
 ```
 
-Prices are stored in EUR/MWh (as published) and displayed in ct/kWh (wholesale,
-excl. taxes and grid fees).
+Prices are stored in EUR/MWh (as published) and displayed in ct/kWh: wholesale, excluding taxes and grid fees.
 
-## Development
+### Project structure
+
+| Path | What lives there |
+|---|---|
+| `scripts/fetch_prices.mjs` | Pipeline CLI: fetch → normalize → write snapshots |
+| `scripts/lib/normalize.mjs` | Pure slot→hour grouping and aggregates (no I/O, imported by tests) |
+| `data/` | Machine-written JSON snapshots, committed by the cron workflow |
+| `src/charts/` | `ClockChart`, `WeekRing`, `YearSpiral` |
+| `src/lib/` | Data loader, color/price scales, insight functions |
+| `src/ui/` | Header, cards, legend, `theme.css` design tokens |
+| `tests/` | Vitest: normalization + DST, aggregates, insights, scales |
+| `.github/workflows/` | `data.yml` (daily cron), `deploy.yml` (Pages) |
+
+---
+
+## 🛠️ Tech stack
+
+| Layer | Technology |
+|---|---|
+| **Frontend** | React 18 + TypeScript + Vite (static SPA, no backend) |
+| **Visualization** | D3 geometry and scales, rendered as React-owned SVG. No chart library |
+| **Styling** | Tailwind CSS v4 + CSS-variable design tokens |
+| **Data pipeline** | Dependency-free Node 22 script on a GitHub Actions cron |
+| **Testing** | Vitest, 41 unit tests (normalization, DST, aggregates, insights, scales) |
+| **Hosting** | GitHub Pages, self-deploying, zero cost |
+| **Data source** | [Elering API](https://dashboard.elering.ee/en/nps/price) / Nord Pool day-ahead |
+
+---
+
+## 💻 Development
+
+Requires Node 22+.
 
 ```bash
 npm install
@@ -70,16 +118,18 @@ npm run data       # refresh data/ for yesterday…tomorrow
 node scripts/fetch_prices.mjs --from 2025-06-01 --to 2026-07-06   # backfill
 ```
 
-The pipeline script is dependency-free Node 22; pure logic lives in
-`scripts/lib/normalize.mjs` and is imported directly by the tests.
+The pipeline script uses Node built-ins only; its pure logic lives in `scripts/lib/normalize.mjs` and the tests import it directly. Tests never touch the network.
 
-## Deploying your own
+---
 
-1. Fork/push the repo, then in **Settings → Pages** set *Source: GitHub Actions*.
+## 🚀 Deploying your own
+
+1. Fork the repo, then in **Settings → Pages** set *Source: GitHub Actions*.
 2. Run the **Update price data** workflow once (or wait for the daily cron).
-3. If your repo name differs, adjust `base` in `vite.config.ts`.
+3. If your repo isn't named `PowerClock`, change `base` in `vite.config.ts`.
 
-## License
+---
 
-[MIT](LICENSE) · Data: [Elering](https://dashboard.elering.ee/en/nps/price) /
-Nord Pool day-ahead.
+## 📄 License
+
+[MIT](LICENSE) · Data: [Elering](https://dashboard.elering.ee/en/nps/price) / Nord Pool day-ahead.
